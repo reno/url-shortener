@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: url_shortener_app
+    ports:
+      - "3333:3333"
+    environment:
+      - PORT=${PORT:-3333}
+      - USE_MYSQL=${USE_MYSQL:-true}
+      - MYSQL_URI=${MYSQL_URI:-mysql://test_user:1234@db:3306/url_shortener}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    container_name: url_shortener_db
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-rootpassword}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-url_shortener}
+      - MYSQL_USER=${MYSQL_USER:-test_user}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-1234}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 5
+
+volumes:
+  mysql_data:
