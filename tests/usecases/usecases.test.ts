@@ -38,7 +38,7 @@ describe('UseCases', () => {
     const hash = "zn9edcu";
     const repo = new InMemoryUrlRepository();
 
-    \    await repo.add(2009215674938, originalLongUrl, hash);
+    await repo.add(2009215674938, originalLongUrl, hash);
 
     const usecase = new UrlRedirector(repo);
     const fetchedLongUrl = await usecase.perform(hash);
